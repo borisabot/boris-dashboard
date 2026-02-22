@@ -1,44 +1,54 @@
 export interface HealthResult {
-  status: string;
-  version: string;
-  uptime?: number;
+  ok: boolean;
+  ts: number;
+  durationMs: number;
+  channels: Record<string, ChannelStatus>;
+  channelOrder: string[];
+  channelLabels: Record<string, string>;
+  heartbeatSeconds: number;
+  defaultAgentId: string;
+  agents: AgentHealth[];
+  sessions: SessionsSummary;
+}
+
+export interface ChannelStatus {
+  configured: boolean;
+  running: boolean;
+  linked?: boolean;
+  connected?: boolean;
+  lastError: string | null;
+  probe?: {
+    ok: boolean;
+    error: string | null;
+    bot?: { username: string };
+  };
+  self?: { e164: string };
   [key: string]: unknown;
 }
 
-export interface AgentInfo {
-  id: string;
-  name: string;
-  status?: string;
-  [key: string]: unknown;
-}
-
-export interface CronJob {
-  id: string;
+export interface AgentHealth {
   agentId: string;
-  every: string;
-  status?: string;
-  lastRun?: string;
-  nextRun?: string;
+  isDefault: boolean;
+  heartbeat: {
+    enabled: boolean;
+    every: string;
+    everyMs: number | null;
+    model: string;
+    [key: string]: unknown;
+  };
+  sessions: SessionsSummary;
+}
+
+export interface SessionsSummary {
+  count: number;
+  recent: SessionRecent[];
   [key: string]: unknown;
 }
 
-export interface CronRun {
-  id: string;
-  cronId: string;
-  startedAt: string;
-  completedAt?: string;
-  status: string;
-  [key: string]: unknown;
-}
-
-export interface SessionInfo {
-  id: string;
-  agentId: string;
-  status?: string;
-  createdAt?: string;
-  tokensUsed?: number;
-  cost?: number;
-  [key: string]: unknown;
+export interface SessionRecent {
+  key: string;
+  updatedAt: number;
+  age: number;
 }
 
 export interface CreditsInfo {

@@ -1,15 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rpcCall } from "@/lib/gateway-client";
 
-const ALLOWED_METHODS = [
-  "health",
-  "agents.list",
-  "status",
-  "cron.list",
-  "cron.runs",
-  "sessions.list",
-  "sessions.usage",
-];
+const ALLOWED_METHODS = ["health", "status", "usage.status", "usage.cost"];
 
 export async function POST(req: NextRequest) {
   try {

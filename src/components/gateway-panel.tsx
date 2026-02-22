@@ -9,16 +9,6 @@ interface GatewayPanelProps {
   loading: boolean;
 }
 
-function formatUptime(seconds?: number): string {
-  if (!seconds) return "—";
-  const d = Math.floor(seconds / 86400);
-  const h = Math.floor((seconds % 86400) / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  if (d > 0) return `${d}d ${h}h ${m}m`;
-  if (h > 0) return `${h}h ${m}m`;
-  return `${m}m`;
-}
-
 export function GatewayPanel({ data, error, loading }: GatewayPanelProps) {
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-5">
@@ -27,20 +17,38 @@ export function GatewayPanel({ data, error, loading }: GatewayPanelProps) {
         {loading ? (
           <span className="text-xs text-zinc-500">loading...</span>
         ) : (
-          <StatusBadge status={error ? "offline" : data?.status} />
+          <StatusBadge status={error ? "offline" : data?.ok ? "online" : "error"} />
         )}
       </div>
       {error ? (
-        <p className="text-xs text-red-400">{error}</p>
+        <p className="text-xs text-red-400 break-all">{error}</p>
       ) : data ? (
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-zinc-500">Version</span>
-            <span className="text-zinc-200 font-mono">{data.version ?? "—"}</span>
+        <div className="space-y-3">
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-zinc-500">Default Agent</span>
+              <span className="text-zinc-200 font-mono">{data.defaultAgentId}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-zinc-500">Agents</span>
+              <span className="text-zinc-200">{data.agents.length}</span>
+            </div>
           </div>
-          <div className="flex justify-between">
-            <span className="text-zinc-500">Uptime</span>
-            <span className="text-zinc-200">{formatUptime(data.uptime as number)}</span>
+          <div className="border-t border-zinc-800 pt-3">
+            <p className="text-xs text-zinc-500 mb-2">Channels</p>
+            <div className="space-y-1">
+              {data.channelOrder.map((ch) => {
+                const status = data.channels[ch];
+                const label = data.channelLabels[ch] ?? ch;
+                const isOk = status?.configured && (status.probe?.ok !== false);
+                return (
+                  <div key={ch} className="flex items-center justify-between text-xs">
+                    <span className="text-zinc-300">{label}</span>
+                    <StatusBadge status={isOk ? "ok" : status?.lastError ? "error" : "offline"} />
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       ) : null}

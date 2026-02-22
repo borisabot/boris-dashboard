@@ -1,17 +1,29 @@
 "use client";
 
-import type { SessionInfo } from "@/lib/types";
+import type { HealthResult } from "@/lib/types";
 
 interface SessionsPanelProps {
-  data: SessionInfo[] | null;
+  data: HealthResult | null;
   error: string | null;
   loading: boolean;
 }
 
+function timeAgo(ms: number): string {
+  const mins = Math.floor(ms / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ${mins % 60}m ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+}
+
 export function SessionsPanel({ data, error, loading }: SessionsPanelProps) {
-  const activeSessions = data?.filter((s) => s.status === "active") ?? [];
-  const totalTokens = data?.reduce((sum, s) => sum + (s.tokensUsed ?? 0), 0) ?? 0;
-  const totalCost = data?.reduce((sum, s) => sum + (s.cost ?? 0), 0) ?? 0;
+  const totalSessions = data?.agents.reduce((sum, a) => sum + a.sessions.count, 0) ?? 0;
+  const allRecent = data?.agents
+    .flatMap((a) =>
+      a.sessions.recent.map((s) => ({ ...s, agentId: a.agentId }))
+    )
+    .sort((a, b) => b.updatedAt - a.updatedAt) ?? [];
 
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-5">
@@ -23,34 +35,24 @@ export function SessionsPanel({ data, error, loading }: SessionsPanelProps) {
       ) : error ? (
         <p className="text-xs text-red-400">{error}</p>
       ) : (
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <p className="text-2xl font-bold text-zinc-100">{activeSessions.length}</p>
-            <p className="text-xs text-zinc-500">Active</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-zinc-100">
-              {totalTokens > 1000 ? `${(totalTokens / 1000).toFixed(1)}k` : totalTokens}
-            </p>
-            <p className="text-xs text-zinc-500">Tokens</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-zinc-100">${totalCost.toFixed(2)}</p>
-            <p className="text-xs text-zinc-500">Cost</p>
-          </div>
-          {data && data.length > 0 && (
-            <div className="col-span-3 mt-2">
-              <p className="text-xs text-zinc-500 mb-2">
-                {data.length} total session{data.length !== 1 ? "s" : ""}
-              </p>
-              <div className="space-y-1 max-h-40 overflow-y-auto">
-                {data.slice(0, 20).map((s) => (
+        <div>
+          <p className="text-3xl font-bold text-zinc-100">{totalSessions}</p>
+          <p className="text-xs text-zinc-500 mb-3">total sessions</p>
+          {allRecent.length > 0 && (
+            <div className="border-t border-zinc-800 pt-3">
+              <p className="text-xs text-zinc-500 mb-2">Recent activity</p>
+              <div className="space-y-1.5 max-h-32 overflow-y-auto">
+                {allRecent.slice(0, 8).map((s) => (
                   <div
-                    key={s.id}
-                    className="flex justify-between text-xs py-1 border-b border-zinc-800/50"
+                    key={s.key}
+                    className="flex items-center justify-between text-xs"
                   >
-                    <span className="text-zinc-400 font-mono">{s.agentId}</span>
-                    <span className="text-zinc-500">{s.status ?? "—"}</span>
+                    <span className="text-zinc-400 font-mono truncate mr-2">
+                      {s.agentId}
+                    </span>
+                    <span className="text-zinc-600 whitespace-nowrap">
+                      {timeAgo(s.age)}
+                    </span>
                   </div>
                 ))}
               </div>
