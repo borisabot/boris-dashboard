@@ -1,7 +1,7 @@
 import type { AgentMeta } from "./types";
 
 export const AGENTS: AgentMeta[] = [
-  { id: "main", name: "Boris", role: "Boss / Orchestrator", icon: "crown", color: "text-amber-400", model: "Gemini Flash", subagentModel: null },
+  { id: "main", name: "Boris", role: "Boss / Orchestrator", icon: "crown", color: "text-amber-400", model: "Sonnet 4.5", subagentModel: null },
   { id: "inbox", name: "Sarah", role: "Email triage & cleanup", icon: "inbox", color: "text-blue-400", model: "Gemini Flash", subagentModel: "Gemini Flash" },
   { id: "calendar", name: "Sarah", role: "Schedule management", icon: "calendar", color: "text-violet-400", model: "Gemini Flash", subagentModel: null },
   { id: "whatsapp-ea", name: "Sarah", role: "WhatsApp EA", icon: "message-circle", color: "text-green-400", model: "Sonnet 4.5", subagentModel: null },
