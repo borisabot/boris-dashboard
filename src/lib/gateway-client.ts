@@ -1,7 +1,7 @@
 import WebSocket from "ws";
 
-const GATEWAY_URL = process.env.GATEWAY_URL!;
-const GATEWAY_TOKEN = process.env.GATEWAY_TOKEN!;
+const GATEWAY_URL = process.env.GATEWAY_URL!.trim();
+const GATEWAY_TOKEN = process.env.GATEWAY_TOKEN!.trim();
 
 let rpcId = 0;
 
