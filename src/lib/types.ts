@@ -61,4 +61,6 @@ export interface AgentMeta {
   id: string;
   name: string;
   role: string;
+  icon: string;
+  color: string;
 }
