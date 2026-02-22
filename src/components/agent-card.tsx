@@ -37,6 +37,16 @@ export function AgentCard({ agent, sessionCount, heartbeatEnabled, heartbeatEver
         <StatusBadge status={status} />
       </div>
       <p className="text-xs text-zinc-400 mt-1">{agent.role}</p>
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700">
+          {agent.model}
+        </span>
+        {agent.subagentModel && (
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-500 border border-zinc-700">
+            sub: {agent.subagentModel}
+          </span>
+        )}
+      </div>
       <div className="flex items-center justify-between mt-3 pt-2 border-t border-zinc-800">
         <span className="text-[11px] text-zinc-500">
           {sessionCount} session{sessionCount !== 1 ? "s" : ""}
