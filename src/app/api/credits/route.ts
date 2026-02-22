@@ -18,8 +18,8 @@ export async function GET() {
     const data = await res.json();
     return NextResponse.json({
       result: {
-        balance: data.data?.balance ?? 0,
-        limit: data.data?.limit ?? 30,
+        balance: data.data?.limit_remaining ?? 0,
+        limit: data.data?.limit ?? 50,
         usage: data.data?.usage ?? 0,
       },
     });
